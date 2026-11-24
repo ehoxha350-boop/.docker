@@ -1,0 +1,39 @@
+services:
+  api:
+    build:
+      context: ./api
+    environment:
+      DATABASE_PATH: /data/sitecraft.db
+      API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:?Set API_ADMIN_TOKEN in your environment}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+    volumes:
+      - site-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build:
+      context: ./web
+    environment:
+      API_ORIGIN: http://api:8000
+      PORT: 3000
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in your environment}
+      API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:?Set API_ADMIN_TOKEN in your environment}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+volumes:
+  site-data:

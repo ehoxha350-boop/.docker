@@ -1,0 +1,14 @@
+{
+  "name": "sitecraft-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site administration dashboard",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check public/app.js && node --check public/post.js"
+  },
+  "dependencies": {
+    "express": "5.1.0"
+  }
+}

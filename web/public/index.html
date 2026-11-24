@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <title>Sites | Sitecraft</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <section class="login-shell" id="login-pane">
+      <form class="login-card" id="login-form">
+        <div class="brand"><span class="brand-mark">S</span> sitecraft</div>
+        <p class="eyebrow">SITE ADMINISTRATION</p>
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in to manage your sites, posts, DNS, and tags.</p>
+        <label class="field">
+          <span>Admin password</span>
+          <input id="admin-password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="button primary full-width" type="submit">Sign in</button>
+        <p class="login-error" id="login-error" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <div class="app-shell" id="app-shell" hidden>
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="Sitecraft home"><span class="brand-mark">S</span> sitecraft</a>
+        <p class="sidebar-label">MANAGE</p>
+        <nav aria-label="Administration">
+          <button class="nav-link active" type="button" data-view="sites"><span>◫</span> Sites</button>
+          <button class="nav-link" type="button" data-view="posts"><span>▤</span> Posts</button>
+          <button class="nav-link" type="button" data-view="dns"><span>⌘</span> DNS records</button>
+          <button class="nav-link" type="button" data-view="tracking"><span>◎</span> Tags & pixels</button>
+        </nav>
+        <div class="sidebar-bottom">
+          <span class="status-dot"></span>
+          <span>Private workspace</span>
+          <button class="text-button" id="sign-out" type="button">Sign out</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <span class="breadcrumb">Workspace <span>/</span> <b id="page-label">Sites</b></span>
+          <label class="site-picker">
+            <span>Current site</span>
+            <select id="site-select" aria-label="Current site"></select>
+          </label>
+        </header>
+
+        <div class="page">
+          <section class="view" id="sites-view">
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE</p><h1>Your sites</h1><p class="subtitle">Manage websites, domain settings, and published content.</p></div>
+              <button class="button primary" id="add-site" type="button">+ Add site</button>
+            </div>
+            <div class="site-grid" id="site-grid"></div>
+            <div class="empty-card" id="sites-empty" hidden>
+              <div class="empty-icon">◫</div><h2>No sites added</h2>
+              <p>Add a website to start managing posts, DNS, and tracking tags.</p>
+              <button class="button primary" id="empty-add-site" type="button">Add your first site</button>
+            </div>
+          </section>
+
+          <section class="view" id="posts-view" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">CONTENT</p><h1>Posts</h1><p class="subtitle">Create drafts and publish posts for the selected site.</p></div>
+              <button class="button primary" id="add-post" type="button">+ New post</button>
+            </div>
+            <div class="panel">
+              <div class="panel-heading"><div><h2>All posts</h2><p id="posts-site-label"></p></div></div>
+              <div class="table-wrap"><table><thead><tr><th>TITLE</th><th>STATUS</th><th>UPDATED</th><th>ACTIONS</th></tr></thead><tbody id="posts-body"></tbody></table>
+                <div class="empty-state" id="posts-empty" hidden><div class="empty-icon">▤</div><h2>No posts yet</h2><p>Create your first post for this site.</p><button class="button secondary" id="empty-add-post" type="button">Create a post</button></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="view" id="dns-view" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">DOMAIN ADMINISTRATION</p><h1>DNS records</h1><p class="subtitle">Read and update supported Route 53 records for the selected site.</p></div>
+            </div>
+            <div class="info-banner"><b>Careful:</b> DNS changes affect live traffic. Changes are applied directly in Route 53.</div>
+            <div class="panel dns-panel">
+              <div class="panel-heading"><div><h2>Add or update a record</h2><p>Names are restricted to the selected site's domain and its subdomains.</p></div></div>
+              <form class="dns-form" id="dns-form">
+                <label class="field"><span>Record name</span><input id="dns-name" placeholder="www.example.com" required></label>
+                <label class="field"><span>Type</span><select id="dns-type"><option>A</option><option>AAAA</option><option>CNAME</option><option>TXT</option></select></label>
+                <label class="field"><span>TTL (seconds)</span><input id="dns-ttl" type="number" min="60" max="86400" value="300" required></label>
+                <label class="field value-field"><span>Values (one per line)</span><textarea id="dns-values" rows="2" placeholder="203.0.113.10" required></textarea></label>
+                <button class="button primary" type="submit">Apply record</button>
+              </form>
+            </div>
+            <div class="panel">
+              <div class="panel-heading"><div><h2>Managed records</h2><p>Only A, AAAA, CNAME, and TXT records are shown.</p></div><button class="button secondary small" id="refresh-dns" type="button">Refresh</button></div>
+              <div class="table-wrap"><table><thead><tr><th>NAME</th><th>TYPE</th><th>TTL</th><th>VALUES</th><th></th></tr></thead><tbody id="dns-body"></tbody></table><div class="empty-state" id="dns-empty" hidden><p>No supported records found, or add a hosted zone ID to the site.</p></div></div>
+            </div>
+          </section>
+
+          <section class="view" id="tracking-view" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">MEASUREMENT</p><h1>Tags & pixels</h1><p class="subtitle">Configure tracking IDs for the selected site.</p></div>
+            </div>
+            <div class="info-banner"><b>Consent required:</b> tags and pixels are loaded on published posts only after a visitor accepts tracking.</div>
+            <form class="panel tracking-form" id="tracking-form">
+              <div class="panel-heading"><div><h2>Tracking integrations</h2><p>Leave a field empty to disable that integration.</p></div></div>
+              <div class="tracking-grid">
+                <label class="field"><span>Google Tag Manager ID</span><input id="gtm-id" placeholder="GTM-XXXXXXX"><small>Optional container ID</small></label>
+                <label class="field"><span>Google Analytics 4 ID</span><input id="ga4-id" placeholder="G-XXXXXXXXXX"><small>Optional measurement ID</small></label>
+                <label class="field"><span>Meta Pixel ID</span><input id="meta-pixel-id" inputmode="numeric" placeholder="123456789012345"><small>Optional numeric pixel ID</small></label>
+                <label class="field"><span>TikTok Pixel ID</span><input id="tiktok-pixel-id" placeholder="XXXXXXXXXXXXXXX"><small>Optional pixel code</small></label>
+              </div>
+              <div class="form-footer"><span id="tracking-updated" class="muted"></span><button class="button primary" type="submit">Save tracking settings</button></div>
+            </form>
+          </section>
+          <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+        </div>
+      </main>
+    </div>
+
+    <dialog id="site-dialog">
+      <form id="site-form">
+        <div class="dialog-heading"><div><p class="eyebrow">WEBSITE</p><h2 id="site-dialog-title">Add site</h2></div><button class="icon-button" id="close-site-dialog" type="button" aria-label="Close">×</button></div>
+        <input id="site-id" type="hidden">
+        <label class="field"><span>Site name</span><input id="site-name" maxlength="120" required></label>
+        <label class="field"><span>Domain</span><input id="site-domain" placeholder="example.com" required></label>
+        <label class="field"><span>Route 53 hosted zone ID</span><input id="site-zone" placeholder="Z0123456789ABC" maxlength="128"><small>Required for live DNS management. AWS credentials are supplied to the API through its environment.</small></label>
+        <div class="dialog-actions"><button class="button secondary" id="cancel-site-dialog" type="button">Cancel</button><button class="button primary" type="submit">Save site</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="post-dialog">
+      <form id="post-form">
+        <div class="dialog-heading"><div><p class="eyebrow">CONTENT</p><h2 id="post-dialog-title">New post</h2></div><button class="icon-button" id="close-post-dialog" type="button" aria-label="Close">×</button></div>
+        <input id="post-id" type="hidden">
+        <label class="field"><span>Title</span><input id="post-title" maxlength="180" required></label>
+        <label class="field"><span>URL slug (optional)</span><input id="post-slug" maxlength="180" placeholder="generated-from-title"></label>
+        <label class="field"><span>Post content</span><textarea id="post-body" rows="9" maxlength="100000" required></textarea></label>
+        <label class="field"><span>Status</span><select id="post-status"><option value="draft">Draft</option><option value="published">Published</option></select></label>
+        <div class="dialog-actions"><button class="button secondary" id="cancel-post-dialog" type="button">Cancel</button><button class="button primary" type="submit">Save post</button></div>
+      </form>
+    </dialog>
+  </body>
+</html>

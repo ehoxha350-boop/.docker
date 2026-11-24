@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Post</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/post.js" defer></script>
+  </head>
+  <body class="public-body">
+    <main class="public-post" id="public-post">
+      <a class="public-brand" href="/">Sitecraft</a>
+      <p class="eyebrow" id="public-site-name"></p>
+      <h1 id="public-title">Loading post…</h1>
+      <p class="public-meta" id="public-date"></p>
+      <article id="public-body" class="public-content"></article>
+    </main>
+    <section class="consent-banner" id="consent-banner" hidden aria-label="Tracking consent">
+      <div><strong>Choose your privacy settings</strong><p>This site uses analytics and advertising tags. Allow them to load?</p></div>
+      <div class="consent-actions">
+        <button class="button secondary small" id="consent-reject" type="button">Reject</button>
+        <button class="button primary small" id="consent-accept" type="button">Allow tracking</button>
+      </div>
+    </section>
+    <button class="consent-settings" id="consent-settings" type="button" hidden>Privacy settings</button>
+    <p class="public-error" id="public-error" hidden>Post not found.</p>
+  </body>
+</html>
